@@ -1,0 +1,165 @@
+[
+  {
+    "sku_id": "PET-FOUNTAIN-PRO",
+    "asin": "B0C9PRO001",
+    "title": "PurrFlow Pro 静音304不锈钢无线泵宠物饮水机 2.5L",
+    "category": "宠物饮水喂食",
+    "sub_category": "智能饮水机",
+    "brand": "PurrFlow",
+    "is_accessory": false,
+    "price_usd": 45.99,
+    "rating_avg": 4.6,
+    "review_count": 1240,
+    "target_pets": ["猫", "小型犬"],
+    "specs_json": {
+      "capacity_l": 2.5,
+      "material": "304食品级不锈钢水盘 + ABS底座",
+      "pump_type": "磁感应无线水泵（底座分离不泡电线）",
+      "noise_db_official": "<25dB",
+      "power": "USB-C 5V/1A（有线插电，无内置电池）",
+      "filter_cycle": "建议每2-4周更换一次六重过滤芯",
+      "dishwasher_safe": "不锈钢托盘与水箱支持洗碗机，底座严禁水洗"
+    }
+  },
+  {
+    "sku_id": "PET-FOUNTAIN-FILTER",
+    "asin": "B0C9FLT002",
+    "title": "PurrFlow Pro 静音不锈钢宠物饮水机专用替换滤芯 8片装+海绵",
+    "category": "宠物饮水喂食",
+    "sub_category": "饮水机配件",
+    "brand": "PurrFlow",
+    "is_accessory": true,
+    "price_usd": 16.99,
+    "rating_avg": 4.7,
+    "review_count": 680,
+    "target_pets": ["猫", "小型犬"],
+    "specs_json": {
+      "pack_count": 8,
+      "compatible_models": ["PET-FOUNTAIN-PRO"],
+      "incompatible_models": ["PET-FOUNTAIN-LITE"],
+      "composition": "活性炭 + 离子交换树脂 + 高密度过滤棉",
+      "pre_soak_minutes": 5
+    }
+  },
+  {
+    "sku_id": "PET-FOUNTAIN-LITE",
+    "asin": "B0C9LIT003",
+    "title": "PurrFlow Lite 基础款透明视窗宠物饮水机 1.8L",
+    "category": "宠物饮水喂食",
+    "sub_category": "智能饮水机",
+    "brand": "PurrFlow",
+    "is_accessory": false,
+    "price_usd": 22.99,
+    "rating_avg": 4.1,
+    "review_count": 530,
+    "target_pets": ["猫"],
+    "specs_json": {
+      "capacity_l": 1.8,
+      "material": "全机身食品级PP塑料（非不锈钢）",
+      "pump_type": "传统有线潜水泵",
+      "noise_db_official": "32dB",
+      "power": "USB 5V（无内置电池）",
+      "filter_cycle": "每2周更换方形基础滤芯"
+    }
+  },
+  {
+    "sku_id": "PET-FEEDER-CAM",
+    "asin": "B0C9FED004",
+    "title": "PurrFlow Vision 4L 高清夜视Wi-Fi自动喂食器",
+    "category": "宠物饮水喂食",
+    "sub_category": "自动喂食器",
+    "brand": "PurrFlow",
+    "is_accessory": false,
+    "price_usd": 89.99,
+    "rating_avg": 4.4,
+    "review_count": 910,
+    "target_pets": ["猫", "小型犬"],
+    "specs_json": {
+      "capacity_l": 4.0,
+      "wifi_band": "仅支持 2.4GHz Wi-Fi（不支持 5GHz）",
+      "camera": "1080P 红外夜视 + 双向语音",
+      "kibble_size_mm": "5-12mm 干粮或小颗粒冻干",
+      "backup_power": "支持3节1号(D型)碱性电池断电续喂（电池需自备，电池模式下摄像头休眠以省电）",
+      "bowl_material": "304不锈钢食盆",
+      "anti_jam": "硅胶软叶轮 + 反转防卡粮"
+    }
+  },
+  {
+    "sku_id": "PET-FEEDER-DESICCANT",
+    "asin": "B0C9DES005",
+    "title": "PurrFlow 自动喂食器专用食品级硅胶干燥剂替换包 12袋装",
+    "category": "宠物饮水喂食",
+    "sub_category": "喂食器配件",
+    "brand": "PurrFlow",
+    "is_accessory": true,
+    "price_usd": 11.99,
+    "rating_avg": 4.8,
+    "review_count": 310,
+    "target_pets": ["猫", "小型犬"],
+    "specs_json": {
+      "pack_count": 12,
+      "replace_cycle_days": 30,
+      "compatible_models": ["PET-FEEDER-CAM"]
+    }
+  },
+  {
+    "sku_id": "PET-LITTER-AUTO",
+    "asin": "B0C9LTR006",
+    "title": "PawNest OpenAir 65L 开放式防夹全自动智能猫砂盆",
+    "category": "宠物清洁",
+    "sub_category": "智能猫砂盆",
+    "brand": "PawNest",
+    "is_accessory": false,
+    "price_usd": 299.00,
+    "rating_avg": 4.5,
+    "review_count": 420,
+    "target_pets": ["猫"],
+    "specs_json": {
+      "drum_volume_l": 65,
+      "waste_bin_l": 9,
+      "pet_weight_range_kg": "1.5 - 8.0 kg（幼猫低于1.5kg请开启手动模式）",
+      "safety_sensors": "红外对射 + 四角重力称重双防夹",
+      "supported_litter": "结团膨润土砂、细条(<=2mm)混合砂/豆腐砂",
+      "unsupported_litter": "水晶砂、长条粗豆腐砂、松木砂（不可用）"
+    }
+  },
+  {
+    "sku_id": "PET-CLIPPER-LOWNOISE",
+    "asin": "B0C9CLP007",
+    "title": "PawNest QuietCut 低噪全身水洗宠物剃毛器套装",
+    "category": "宠物美容",
+    "sub_category": "宠物剃毛器",
+    "brand": "PawNest",
+    "is_accessory": false,
+    "price_usd": 34.99,
+    "rating_avg": 4.5,
+    "review_count": 760,
+    "target_pets": ["猫", "小型犬", "中型犬"],
+    "specs_json": {
+      "blade_material": "钛合金定刀 + 陶瓷动刀",
+      "noise_db_official": "约50dB",
+      "waterproof": "IPX7 全身水洗",
+      "battery_runtime_min": 180,
+      "charging": "USB-C 充插两用",
+      "included_combs_mm": [3, 6, 9, 12]
+    }
+  },
+  {
+    "sku_id": "PET-CARRIER-AIR",
+    "asin": "B0C9CAR008",
+    "title": "PawNest AeroFold 航空透气折叠宠物外出包",
+    "category": "宠物出行",
+    "sub_category": "宠物包",
+    "brand": "PawNest",
+    "is_accessory": false,
+    "price_usd": 49.99,
+    "rating_avg": 0.0,
+    "review_count": 0,
+    "target_pets": ["猫", "小型犬"],
+    "specs_json": {
+      "dimensions_cm": "43 x 28 x 25",
+      "max_weight_kg": 6.0,
+      "material": "防抓尼龙网面 + 底部可拆硬质防塌板"
+    }
+  }
+]

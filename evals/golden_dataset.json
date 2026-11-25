@@ -1,0 +1,186 @@
+[
+  {
+    "id": "Q01",
+    "category": "in_domain_sku",
+    "sku_id": "PET-FOUNTAIN-PRO",
+    "question": "这款饮水机放卧室床头吵不吵？清洗方便吗？",
+    "expected_abstain": false,
+    "expected_review_ids": ["R1001", "R1002"],
+    "ground_truth": "官方标称<25dB，买家实测放卧室床头几乎听不到马达声音，仅缺水快见底时有轻微水流声；无线水泵拆洗方便，但硬水地区约3周需刷洗叶轮防结垢变响。"
+  },
+  {
+    "id": "Q02",
+    "category": "in_domain_sku",
+    "sku_id": "PET-FOUNTAIN-PRO",
+    "question": "水箱和底座都能直接放进洗碗机清洗吗？",
+    "expected_abstain": false,
+    "expected_review_ids": ["R1003", "R1004"],
+    "ground_truth": "不锈钢水箱和饮水盘支持洗碗机65度清洗且不易变形生锈，但底座不防水且严禁水洗，进水会导致无线感应区红灯停泵。"
+  },
+  {
+    "id": "Q03",
+    "category": "in_domain_sku",
+    "sku_id": "PET-FOUNTAIN-PRO",
+    "question": "它写的无线水泵是不是说明可以不插电带电池续航？",
+    "expected_abstain": false,
+    "expected_review_ids": ["R1003", "R1005"],
+    "ground_truth": "不是。无线仅指水泵磁感应免泡电线，整机需 USB-C 有线插电、无内置电池，停电即停水；线缆带尼龙防咬编织。"
+  },
+  {
+    "id": "Q04",
+    "category": "in_domain_sku",
+    "sku_id": "PET-FEEDER-CAM",
+    "question": "家里是5GHz双频合一路由器，配网会不会连不上？",
+    "expected_abstain": false,
+    "expected_review_ids": ["R4001"],
+    "ground_truth": "仅支持 2.4GHz Wi-Fi，不支持 5GHz。买家实测双频合一会连不上，拆出单独 2.4GHz 频段后可快速配网。"
+  },
+  {
+    "id": "Q05",
+    "category": "in_domain_sku",
+    "sku_id": "PET-FEEDER-CAM",
+    "question": "混大块鸡胸肉冻干会不会卡粮？",
+    "expected_abstain": false,
+    "expected_review_ids": ["R4002"],
+    "ground_truth": "官方适配 5-12mm 干粮或小颗粒冻干。买家反馈 5-8mm 小块顺畅，但超过 12mm 的大块或长条鸡胸肉冻干容易卡在出粮口触发报警，需剪小投放。"
+  },
+  {
+    "id": "Q06",
+    "category": "in_domain_sku",
+    "sku_id": "PET-FEEDER-CAM",
+    "question": "停电时装电池还能不能按时出粮以及用手机看监控？",
+    "expected_abstain": false,
+    "expected_review_ids": ["R4003"],
+    "ground_truth": "装 3 节 1 号碱性电池后停电仍能按计划准时出粮，但电池模式下 Wi-Fi 与摄像头会自动休眠省电，无法看实时画面，来电后自动恢复。"
+  },
+  {
+    "id": "Q07",
+    "category": "in_domain_sku",
+    "sku_id": "PET-LITTER-AUTO",
+    "question": "这款猫砂盆能用粗条豆腐砂或者松木砂吗？",
+    "expected_abstain": false,
+    "expected_review_ids": ["R6002"],
+    "ground_truth": "不能。仅支持结团膨润土砂和<=2mm细条混合/豆腐砂；买家实测 3mm 粗条豆腐砂会被误铲浪费，松木砂和水晶砂完全不可用。"
+  },
+  {
+    "id": "Q08",
+    "category": "in_domain_sku",
+    "sku_id": "PET-CLIPPER-LOWNOISE",
+    "question": "长毛猫重度打结毡化了，这款剃毛器能直接推吗？刀头烫不烫？",
+    "expected_abstain": false,
+    "expected_review_ids": ["R7001", "R7002"],
+    "ground_truth": "陶瓷刀头连续用 25 分钟仅微温不烫皮肤、日常不夹毛，但重度打结毡化的毛饼直接硬推较吃力，需先用排梳挑开再顺毛推。"
+  },
+  {
+    "id": "Q09",
+    "category": "cross_model_trap",
+    "sku_id": "PET-FOUNTAIN-PRO",
+    "question": "这款 Pro 饮水机是不是塑料材质容易让猫长黑下巴，晚上还有嗡嗡低频噪音？",
+    "expected_abstain": false,
+    "expected_review_ids": ["R1001", "R1002"],
+    "forbidden_sku_ids": ["PET-FOUNTAIN-LITE", "PET-FOUNTAIN-FILTER"],
+    "ground_truth": "不是塑料款。PET-FOUNTAIN-PRO 是304不锈钢水盘，买家反馈不容易长黑下巴且放卧室几乎无马达声（塑料易长黑下巴和嗡嗡声是 Lite 基础款的问题，不可混淆）。"
+  },
+  {
+    "id": "Q10",
+    "category": "cross_model_trap",
+    "sku_id": "PET-FOUNTAIN-LITE",
+    "question": "这款 Lite 饮水机能不能用无线水泵直接进洗碗机洗？",
+    "expected_abstain": false,
+    "expected_review_ids": ["R3002"],
+    "forbidden_sku_ids": ["PET-FOUNTAIN-PRO"],
+    "ground_truth": "不能。PET-FOUNTAIN-LITE 是传统有线潜水泵与全PP塑料机身，清洗需抠出电源线，且塑料件不可进高温洗碗机（买家实测盖子会轻微变形）。"
+  },
+  {
+    "id": "Q11",
+    "category": "cross_model_trap",
+    "sku_id": "PET-FOUNTAIN-FILTER",
+    "question": "这个8片装滤芯能不能装在 PurrFlow Lite 基础款饮水机上？",
+    "expected_abstain": false,
+    "expected_review_ids": ["R2001"],
+    "forbidden_sku_ids": ["PET-FOUNTAIN-PRO", "PET-FOUNTAIN-LITE"],
+    "ground_truth": "不能。该圆形带卡槽滤芯仅适配 PET-FOUNTAIN-PRO，不兼容 PET-FOUNTAIN-LITE，有买家买错后退换。"
+  },
+  {
+    "id": "Q12",
+    "category": "cross_model_trap",
+    "sku_id": "PET-FEEDER-CAM",
+    "question": "这款喂食器自带的干燥剂一包能用多久？会不会掉进粮桶里？",
+    "expected_abstain": false,
+    "expected_review_ids": ["R4004"],
+    "forbidden_sku_ids": ["PET-FEEDER-DESICCANT"],
+    "ground_truth": "喂食器本体评论提及顶盖干燥剂盒配合密封圈在回南天半个月仍保脆；具体替换周期与卡槽细节若未在本体评论覆盖应如实说明（不可把配件 SKU 的评论冒充为本体评论）。"
+  },
+  {
+    "id": "Q13",
+    "category": "abstain_boundary",
+    "sku_id": "PET-CARRIER-AIR",
+    "question": "这款航空宠物包买家实测拉链耐不耐用、底板塌不塌？",
+    "expected_abstain": true,
+    "expected_review_ids": [],
+    "ground_truth": "该商品目前暂无已核验买家评论，必须拒答并告知无法基于真实使用体验给出结论。"
+  },
+  {
+    "id": "Q14",
+    "category": "abstain_boundary",
+    "sku_id": "SKU-NON-EXISTENT-999",
+    "question": "这款猫爬架稳不稳，大猫跳上去会晃吗？",
+    "expected_abstain": true,
+    "expected_review_ids": [],
+    "ground_truth": "未找到该商品主数据且无评论证据，必须拒答，严禁编造。"
+  },
+  {
+    "id": "Q15",
+    "category": "abstain_boundary",
+    "sku_id": "PET-CARRIER-AIR",
+    "question": "买家评价里说这款宠物包透气性怎么样，有没有异味差评？",
+    "expected_abstain": true,
+    "expected_review_ids": [],
+    "ground_truth": "该商品暂无买家评论，必须拒答，不可臆测或借用其他商品评价。"
+  },
+  {
+    "id": "Q16",
+    "category": "abstain_boundary",
+    "sku_id": "PET-FOUNTAIN-PRO",
+    "question": "这款饮水机支持连接 HomeKit 语音控制或者内置蓝牙音箱播放舒缓音乐吗？",
+    "expected_abstain": false,
+    "expected_review_ids": [],
+    "ground_truth": "现有商品规格与买家评论均未提及 HomeKit 或蓝牙音箱功能，应明确告知资料未覆盖、建议联系人工确认，不得编造支持。"
+  },
+  {
+    "id": "Q17",
+    "category": "mixed_pros_cons",
+    "sku_id": "PET-LITTER-AUTO",
+    "question": "我家有9kg的缅因猫和1.2kg的幼猫，这款猫砂盆都能安全用吗？",
+    "expected_abstain": false,
+    "expected_review_ids": ["R6001", "R6003"],
+    "ground_truth": "官方适用1.5-8kg。9kg巨型缅因猫偏挤蹭边不太推荐；1.2kg幼猫低于1.5kg需开启App幼猫保护/手动模式，防夹传感器在1.5-8kg正常范围内1秒内刹停。"
+  },
+  {
+    "id": "Q18",
+    "category": "mixed_pros_cons",
+    "sku_id": "PET-LITTER-AUTO",
+    "question": "集便仓必须买原厂专用垃圾袋吗？软便会不会沾底？",
+    "expected_abstain": false,
+    "expected_review_ids": ["R6004"],
+    "ground_truth": "不需要原厂专用袋，普通加厚抽绳袋即可套入（两只猫约4-5天换一次）；软便时底部硅胶垫会轻微沾粘，建议将延迟清理调到15分钟。"
+  },
+  {
+    "id": "Q19",
+    "category": "mixed_pros_cons",
+    "sku_id": "PET-FEEDER-CAM",
+    "question": "语音对讲和清洗方面有没有什么需要注意的缺点？",
+    "expected_abstain": false,
+    "expected_review_ids": ["R4004", "R4005"],
+    "ground_truth": "语音对讲约有2秒延迟且喇叭偏尖可能吓到胆小猫；食盆和储粮桶可拆洗，但主机底座含电机绝对不能碰水。"
+  },
+  {
+    "id": "Q20",
+    "category": "mixed_pros_cons",
+    "sku_id": "PET-CLIPPER-LOWNOISE",
+    "question": "续航够给中型犬修毛吗？配件拆装有没有不方便的地方？",
+    "expected_abstain": false,
+    "expected_review_ids": ["R7003"],
+    "ground_truth": "官方续航180分钟且充插两用，买家实测给中型柯基修脚底和肚皮毛可用4次仍有电；缺点是限位梳塑料卡扣偏紧，拆卸较费力。"
+  }
+]

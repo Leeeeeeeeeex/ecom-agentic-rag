@@ -1,0 +1,64 @@
+Metadata-Version: 2.4
+Name: ecom-agentic-rag
+Version: 0.1.0
+Summary: 跨境电商生产级 Agentic RAG 商品与评论知识问答平台（混合检索 + 证据门控 + RAGAS 评测 + Langfuse 可观测）
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+Requires-Dist: fastapi>=0.115.0
+Requires-Dist: uvicorn[standard]>=0.32.0
+Requires-Dist: pydantic>=2.9.0
+Requires-Dist: pydantic-settings>=2.6.0
+Requires-Dist: psycopg[binary]>=3.2.0
+Requires-Dist: pgvector>=0.3.6
+Requires-Dist: redis>=5.2.0
+Requires-Dist: openai>=1.55.0
+Requires-Dist: langgraph>=0.2.50
+Requires-Dist: langchain-core>=0.3.20
+Requires-Dist: langchain-openai>=0.2.10
+Requires-Dist: langfuse>=2.55.0
+Requires-Dist: rank-bm25>=0.2.2
+Requires-Dist: jieba>=0.42.1
+Requires-Dist: httpx>=0.27.2
+Requires-Dist: numpy>=1.26.4
+Provides-Extra: eval
+Requires-Dist: ragas>=0.2.6; extra == "eval"
+Requires-Dist: datasets>=3.1.0; extra == "eval"
+Provides-Extra: dev
+Requires-Dist: pytest>=8.3.0; extra == "dev"
+Requires-Dist: pytest-asyncio>=0.24.0; extra == "dev"
+Requires-Dist: ruff>=0.7.0; extra == "dev"
+
+# 跨境电商生产级 Agentic RAG 商品与评论知识问答平台 (`ecom-agentic-rag`)
+
+> 聚焦**跨境电商宠物用品**垂直场景，解决商品详情页无法覆盖的真实使用体验问答（材质耐用性、噪音实测、尺寸适配、清洗难易度与配件兼容性），完整实现 **数据治理 → 混合检索与重排 → Agentic 证据门控与拒答 → RAGAS 自动化评测 → Langfuse 可观测监控 → Badcase 迭代闭环**。
+
+## 架构总览
+
+```mermaid
+flowchart LR
+    U[导购/运营提问 + sku_id] --> API[FastAPI 网关<br/>参数校验 / Redis 限流 / 缓存]
+    API --> G[LangGraph Agentic RAG 状态机]
+    G --> R1[pgvector 语义召回<br/>按 sku_id 强过滤]
+    G --> R2[BM25 / tsvector 词法召回]
+    R1 & R2 --> F[RRF 融合 + 质量加权 Rerank]
+    F --> C{证据充分性门控}
+    C -->|证据不足| AB[显式拒答 + 缺口说明]
+    C -->|证据充分| GEN[结构化带引用回答生成<br/>分离商品参数与买家体验]
+    GEN & AB --> LF[Langfuse Trace & 成本监控]
+    GEN & AB --> FB[qa_feedback_logs 反馈与 Badcase 回流]
+    FB -.->|驱动规则/切块/Prompt 迭代| EV[RAGAS 黄金评测集回归]
+```
+
+## 目录规划
+
+- `docker/`：部署在 Linux 虚拟机上的 `docker-compose.yml`（PostgreSQL+pgvector、Redis、可选 Langfuse）与建表脚本 `init.sql`
+- `src/ecom_rag/`：核心源码（数据治理、混合检索、V1 基线、V2 LangGraph 状态机、API 服务、可观测埋点）
+- `data/`：跨境宠物用品商品与评论测试集（含主商品、配件干扰项、低质/重复评论、真实业务痛点）
+- `evals/`：黄金评测集、RAGAS 自动化评测脚本与 V1→V2 对比报告
+- `docs/`：架构决策记录与 Badcase 迭代日志
+
+## 开发模式（Windows 本机写代码 + Linux 虚拟机跑 Docker）
+
+1. 将 `docker/` 目录传到 Linux 虚拟机并执行 `docker compose up -d`（如需本地 Langfuse 加 `--profile observability`）。
+2. 在 Windows 本机复制 `.env.example` 为 `.env`，填入虚拟机 IP 与大模型 API Key。
+3. 本机安装 Python 依赖后即可运行入库、服务和评测。

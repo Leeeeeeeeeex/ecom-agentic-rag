@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>跨境电商商品评论 Agentic RAG 智能问答工作台</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --card: #ffffff;
+      --border: #e5e7eb;
+      --text: #111827;
+      --muted: #6b7280;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --success-bg: #ecfdf5;
+      --success-text: #047857;
+      --warn-bg: #fffbeb;
+      --warn-text: #b45309;
+      --danger-bg: #fef2f2;
+      --danger-text: #b91c1c;
+      --info-bg: #eff6ff;
+      --info-text: #1d4ed8;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    header {
+      background: #0f172a;
+      color: #f8fafc;
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.15);
+    }
+    .brand { display: flex; flex-direction: column; }
+    .brand h1 { margin: 0; font-size: 18px; font-weight: 600; letter-spacing: 0.2px; }
+    .brand span { font-size: 12px; color: #94a3b8; }
+    .header-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .status-pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 10px; border-radius: 999px; font-size: 12px;
+      background: rgba(255, 255, 255, 0.1); color: #e2e8f0;
+    }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: #94a3b8; }
+    .dot.ok { background: #22c55e; }
+    .dot.err { background: #ef4444; }
+    .header-link {
+      color: #cbd5e1; text-decoration: none; font-size: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.2); padding: 5px 10px; border-radius: 6px;
+    }
+    .header-link:hover { background: rgba(255, 255, 255, 0.1); color: #fff; }
+
+    main {
+      max-width: 1380px;
+      margin: 20px auto;
+      padding: 0 20px 40px;
+      display: grid;
+      grid-template-columns: 350px 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+    @media (max-width: 960px) {
+      main { grid-template-columns: 1fr; }
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    }
+    .card h2 {
+      margin: 0 0 14px;
+      font-size: 15px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #374151;
+    }
+    select, textarea, input[type="text"] {
+      width: 100%;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      padding: 9px 11px;
+      font-size: 13px;
+      font-family: inherit;
+      background: #fff;
+      color: var(--text);
+    }
+    select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+    }
+    textarea { resize: vertical; min-height: 82px; }
+    .field { margin-bottom: 14px; }
+    .mode-group {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 6px;
+    }
+    .mode-option {
+      display: flex; align-items: flex-start; gap: 8px;
+      border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px;
+      cursor: pointer; font-size: 13px; font-weight: 500;
+    }
+    .mode-option:hover { border-color: #93c5fd; background: #f8fafc; }
+    .mode-option small { display: block; color: var(--muted); font-weight: 400; font-size: 11px; }
+    .checkbox-row {
+      display: flex; align-items: center; gap: 8px; font-size: 13px; color: #374151; margin-bottom: 14px;
+    }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      border: none; border-radius: 8px; padding: 10px 16px;
+      font-size: 14px; font-weight: 600; cursor: pointer; transition: 0.15s;
+    }
+    .btn-primary { background: var(--primary); color: #fff; width: 100%; }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-primary:disabled { background: #93c5fd; cursor: not-allowed; }
+    .btn-sm { padding: 5px 10px; font-size: 12px; border-radius: 6px; }
+    .btn-outline {
+      background: #fff; color: #374151; border: 1px solid #d1d5db;
+    }
+    .btn-outline:hover { background: #f3f4f6; }
+
+    .preset-list { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+    .preset-btn {
+      text-align: left; background: #f8fafc; border: 1px solid #e2e8f0;
+      border-radius: 8px; padding: 8px 10px; cursor: pointer; font-size: 12px; color: #1e293b;
+    }
+    .preset-btn:hover { border-color: var(--primary); background: #eff6ff; }
+    .preset-tag {
+      display: inline-block; font-size: 11px; font-weight: 600; padding: 1px 6px;
+      border-radius: 4px; margin-bottom: 3px;
+    }
+    .tag-blue { background: var(--info-bg); color: var(--info-text); }
+    .tag-amber { background: var(--warn-bg); color: var(--warn-text); }
+    .tag-red { background: var(--danger-bg); color: var(--danger-text); }
+    .tag-green { background: var(--success-bg); color: var(--success-text); }
+
+    .results-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+    .results-grid.dual { grid-template-columns: 1fr 1fr; }
+    @media (max-width: 1200px) {
+      .results-grid.dual { grid-template-columns: 1fr; }
+    }
+    .badges { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+    .badge {
+      font-size: 12px; font-weight: 600; padding: 3px 9px; border-radius: 999px;
+    }
+    .answer-box {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 14px 16px;
+      font-size: 14px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .cite-chip {
+      display: inline-block; background: #dbeafe; color: #1e40af;
+      font-weight: 600; font-size: 12px; padding: 0 5px; border-radius: 4px;
+    }
+    .metrics-bar {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+      gap: 8px;
+      margin: 12px 0;
+    }
+    .metric-item {
+      background: #f9fafb; border: 1px solid var(--border); border-radius: 8px;
+      padding: 7px 10px;
+    }
+    .metric-item .k { font-size: 11px; color: var(--muted); display: block; }
+    .metric-item .v { font-size: 14px; font-weight: 700; color: var(--text); }
+
+    .feedback-bar {
+      display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+      padding-top: 10px; border-top: 1px dashed var(--border); margin-top: 12px;
+      font-size: 12px; color: var(--muted);
+    }
+    .feedback-bar select { width: auto; padding: 4px 8px; font-size: 12px; }
+
+    details {
+      margin-top: 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      background: #fff;
+    }
+    summary {
+      cursor: pointer; font-size: 13px; font-weight: 600; color: #1f2937;
+    }
+    .chunk-item {
+      border: 1px solid #e5e7eb; border-radius: 8px; padding: 10px 12px;
+      margin-top: 10px; font-size: 13px; background: #fcfcfd;
+    }
+    .chunk-item.polluted {
+      border-color: #fca5a5; background: #fef2f2;
+    }
+    .chunk-meta {
+      display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+      font-size: 12px; color: var(--muted); margin-bottom: 6px;
+    }
+    .specs-pre {
+      background: #f8fafc; border-radius: 6px; padding: 10px; font-size: 12px;
+      overflow-x: auto; margin: 8px 0 0;
+    }
+    .empty-state {
+      text-align: center; padding: 48px 20px; color: var(--muted);
+    }
+    .empty-state h3 { margin: 0 0 8px; color: #374151; font-size: 16px; }
+    .error-banner {
+      background: var(--danger-bg); color: var(--danger-text);
+      border: 1px solid #fecaca; border-radius: 8px; padding: 12px 14px; font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <h1>跨境电商商品评论 Agentic RAG 智能问答工作台</h1>
+      <span>pgvector + BM25 混合检索 · 证据充分性门控 · 引用核验 · Redis 缓存 · Langfuse 可观测</span>
+    </div>
+    <div class="header-actions">
+      <div class="status-pill" id="healthPill">
+        <span class="dot" id="healthDot"></span>
+        <span id="healthText">正在检查系统状态...</span>
+      </div>
+      <a class="header-link" id="langfuseLink" href="http://192.168.150.130:3000" target="_blank">打开 Langfuse 监控大屏</a>
+      <a class="header-link" href="/docs" target="_blank">API 接口文档</a>
+    </div>
+  </header>
+
+  <main>
+    <!-- 左侧控制面板 -->
+    <section style="display:flex; flex-direction:column; gap:16px;">
+      <div class="card">
+        <h2>提问配置</h2>
+
+        <div class="field">
+          <label for="skuSelect">目标商品（SKU）</label>
+          <select id="skuSelect">
+            <option value="">正在加载商品列表...</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="questionInput">买家 / 导购咨询问题</label>
+          <textarea id="questionInput" placeholder="例如：这款饮水机放卧室床头吵不吵？水箱和底座能进洗碗机吗？"></textarea>
+        </div>
+
+        <div class="field">
+          <label>运行引擎模式</label>
+          <div class="mode-group">
+            <label class="mode-option">
+              <input type="radio" name="runMode" value="v2_agentic_hybrid" checked />
+              <div>
+                V2 生产版（推荐）
+                <small>SKU 强隔离 + BM25/pgvector RRF 混合重排 + 拒答门控 + 引用核验</small>
+              </div>
+            </label>
+            <label class="mode-option">
+              <input type="radio" name="runMode" value="v1_vector" />
+              <div>
+                V1 基线版（对照组）
+                <small>全库纯向量检索，无强隔离与拒答门控，用于演示串品与幻觉问题</small>
+              </div>
+            </label>
+            <label class="mode-option">
+              <input type="radio" name="runMode" value="compare" />
+              <div>
+                ⚡ V1 / V2 同屏双栏对比
+                <small>同一问题并行请求两个版本，直观对比防串品、拒答与引用溯源</small>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <label class="checkbox-row">
+          <input type="checkbox" id="useCacheCheckbox" checked />
+          启用 Redis 热点缓存（再次提问同问题约 30ms 返回、0 Token）
+        </label>
+
+        <button class="btn btn-primary" id="askBtn" onclick="handleAsk()">发起智能问答</button>
+      </div>
+
+      <div class="card">
+        <h2>一键演示典型场景</h2>
+        <div class="preset-list">
+          <button class="preset-btn" onclick="applyPreset('PET-FOUNTAIN-PRO', '这款饮水机放卧室床头吵不吵？水箱和底座都能直接放进洗碗机清洗吗？', 'v2_agentic_hybrid')">
+            <span class="preset-tag tag-green">正常体验问答</span><br />
+            不锈钢饮水机 Pro：卧室噪音与洗碗机清洗实测
+          </button>
+          <button class="preset-btn" onclick="applyPreset('PET-FEEDER-CAM', '这款喂食器自带的干燥剂一包能用多久？会不会掉进粮桶里？', 'compare')">
+            <span class="preset-tag tag-red">跨品/配件防串答对比</span><br />
+            自动喂食器干燥剂问题（双栏看 V1 串品 vs V2 隔离）
+          </button>
+          <button class="preset-btn" onclick="applyPreset('PET-CARRIER-AIR', '这款航空宠物包买家实测拉链耐不耐用、底板塌不塌？', 'compare')">
+            <span class="preset-tag tag-amber">零评论拒答边界</span><br />
+            航空宠物包（无评论新品：看 V2 0 Token 短路拒答）
+          </button>
+          <button class="preset-btn" onclick="applyPreset('PET-LITTER-AUTO', '我家有9kg的缅因猫和1.2kg的幼猫，这款猫砂盆都能安全用吗？', 'v2_agentic_hybrid')">
+            <span class="preset-tag tag-blue">正负权衡与安全提醒</span><br />
+            智能猫砂盆：巨型猫与幼猫适配边界实测
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 右侧结果展示区 -->
+    <section id="resultArea">
+      <div class="card empty-state">
+        <h3>请选择商品并输入问题，或点击左侧「一键演示典型场景」</h3>
+        <p>系统将实时返回分阶段耗时、Token 成本、带评论编号 [Rxxxx] 的可核验回答，以及全部召回原始评论证据。</p>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    let productList = [];
+
+    function escapeHtml(str) {
+      return String(str || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function formatAnswer(text) {
+      let safe = escapeHtml(text);
+      safe = safe.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+      safe = safe.replace(/\[(R\d+)\]/g, '<span class="cite-chip">[$1]</span>');
+      return safe;
+    }
+
+    async function loadHealth() {
+      const dot = document.getElementById("healthDot");
+      const text = document.getElementById("healthText");
+      try {
+        const res = await fetch("/health");
+        const data = await res.json();
+        if (res.ok && data.status === "ok") {
+          dot.className = "dot ok";
+          const pg = data.postgres || {};
+          text.textContent = `服务正常 · pgvector ${pg.pgvector_version || ""} · ${pg.products || 0} 商品 / ${pg.active_chunks || 0} 切片 · Redis ${data.redis ? "在线" : "离线"}`;
+          if (data.langfuse_url) {
+            document.getElementById("langfuseLink").href = data.langfuse_url;
+          }
+        } else {
+          throw new Error("异常");
+        }
+      } catch (e) {
+        dot.className = "dot err";
+        text.textContent = "后端健康检查失败，请确认虚拟机容器已启动";
+      }
+    }
+
+    async function loadProducts() {
+      const sel = document.getElementById("skuSelect");
+      try {
+        const res = await fetch("/products");
+        const data = await res.json();
+        productList = data.items || [];
+        sel.innerHTML = '<option value="">（不指定 SKU · 自动排除配件全库检索）</option>';
+        for (const p of productList) {
+          const kind = p.is_accessory ? "[配件]" : "[主商品]";
+          const chunksInfo = p.active_chunks === 0 ? "零评论·测拒答" : `${p.active_chunks} 条有效评论`;
+          const opt = document.createElement("option");
+          opt.value = p.sku_id;
+          opt.textContent = `${kind} ${p.sku_id}｜${p.title}（${chunksInfo}）`;
+          sel.appendChild(opt);
+        }
+        sel.value = "PET-FOUNTAIN-PRO";
+      } catch (e) {
+        sel.innerHTML = '<option value="">加载商品失败</option>';
+      }
+    }
+
+    function applyPreset(skuId, question, mode) {
+      document.getElementById("skuSelect").value = skuId;
+      document.getElementById("questionInput").value = question;
+      const radio = document.querySelector(`input[name="runMode"][value="${mode}"]`);
+      if (radio) radio.checked = true;
+      handleAsk();
+    }
+
+    async function callQA(skuId, question, version, useCache) {
+      const t0 = performance.now();
+      const res = await fetch("/api/v1/qa", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          sku_id: skuId || null,
+          question,
+          pipeline_version: version,
+          use_cache: useCache,
+          top_k: 5
+        })
+      });
+      const wallMs = Math.round(performance.now() - t0);
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.detail || `请求失败 (${res.status})`);
+      }
+      data._wall_ms = wallMs;
+      return data;
+    }
+
+    function renderResultCard(data, targetSkuId) {
+      const isV2 = data.pipeline_version === "v2_agentic_hybrid";
+      const title = isV2 ? "V2 生产版（混合检索 + 证据门控）" : "V1 基线版（全库纯向量）";
+      const m = data.metrics || {};
+      const chunks = data.evidence_chunks || [];
+      const pollutedCount = targetSkuId
+        ? chunks.filter(c => c.sku_id !== targetSkuId).length
+        : 0;
+
+      const badges = [
+        `<span class="badge ${isV2 ? "tag-blue" : "tag-amber"}">${title}</span>`,
+        data.cache_hit
+          ? `<span class="badge tag-green">Redis 缓存命中（${data._wall_ms} ms）</span>`
+          : `<span class="badge tag-blue">实时链路（${data._wall_ms} ms）</span>`,
+        data.abstained
+          ? `<span class="badge tag-amber">已触发拒答保护（0 Token）</span>`
+          : `<span class="badge tag-green">证据充分 · 正常生成</span>`,
+        data.citation_valid
+          ? `<span class="badge tag-green">引用校验通过${(data.cited_review_ids || []).length ? " (" + data.cited_review_ids.join(", ") + ")" : ""}</span>`
+          : `<span class="badge tag-red">检测到非法引用: ${(data.invalid_citations || []).join(", ")}</span>`,
+        pollutedCount > 0
+          ? `<span class="badge tag-red">⚠️ 跨品污染：${pollutedCount}/${chunks.length} 条来自其他 SKU</span>`
+          : (chunks.length > 0 ? `<span class="badge tag-green">SKU 纯净度 100%</span>` : "")
+      ].join("");
+
+      const chunksHtml = chunks.length === 0
+        ? `<p style="font-size:12px;color:#6b7280;margin:8px 0 0;">本轮未召回有效买家评论。</p>`
+        : chunks.map(c => {
+            const isPolluted = targetSkuId && c.sku_id !== targetSkuId;
+            return `
+              <div class="chunk-item ${isPolluted ? "polluted" : ""}">
+                <div class="chunk-meta">
+                  <span class="cite-chip">[${escapeHtml(c.review_id)}]</span>
+                  <span>SKU: <strong>${escapeHtml(c.sku_id)}</strong></span>
+                  ${isPolluted ? '<span class="preset-tag tag-red">跨品污染</span>' : ""}
+                  <span>${c.rating || "-"}星</span>
+                  <span>${c.verified_purchase ? "已验证购买" : "未验证"}</span>
+                  <span>有用票 ${c.helpful_votes || 0}</span>
+                  <span>向量分 ${c.vector_score}</span>
+                  <span>BM25 ${c.bm25_score}</span>
+                  <span>综合分 <strong>${c.final_score}</strong></span>
+                </div>
+                <div>${escapeHtml(c.content)}</div>
+              </div>
+            `;
+          }).join("");
+
+      const specsHtml = data.product
+        ? `<details>
+             <summary>查看官方商品规格（${escapeHtml(data.product.sku_id)} · $${data.product.price_usd ?? "-"}）</summary>
+             <pre class="specs-pre">${escapeHtml(JSON.stringify(data.product.specs_json || {}, null, 2))}</pre>
+           </details>`
+        : "";
+
+      const fbId = `fb_${data.trace_id}`;
+      return `
+        <div class="card">
+          <div class="badges">${badges}</div>
+          <div class="answer-box">${formatAnswer(data.answer)}</div>
+
+          <div class="metrics-bar">
+            <div class="metric-item"><span class="k">接口总耗时</span><span class="v">${data._wall_ms} ms</span></div>
+            <div class="metric-item"><span class="k">向量化</span><span class="v">${m.embed_ms ?? 0} ms</span></div>
+            <div class="metric-item"><span class="k">检索重排</span><span class="v">${m.retrieve_ms ?? 0} ms</span></div>
+            <div class="metric-item"><span class="k">模型生成</span><span class="v">${m.generate_ms ?? 0} ms</span></div>
+            <div class="metric-item"><span class="k">输入 / 输出 Token</span><span class="v">${m.prompt_tokens ?? 0} / ${m.completion_tokens ?? 0}</span></div>
+          </div>
+
+          <div class="feedback-bar" id="${fbId}">
+            <span>Trace ID: <code>${escapeHtml(data.trace_id)}</code></span>
+            <button class="btn btn-sm btn-outline" onclick="sendFeedback('${data.trace_id}', 1, null, '${fbId}')">👍 满意</button>
+            <select id="tag_${data.trace_id}">
+              <option value="wrong_sku">跨型号串品</option>
+              <option value="hallucination">事实幻觉</option>
+              <option value="missed_recall">漏召回关键评论</option>
+              <option value="over_abstain">过度拒答</option>
+              <option value="other">其他问题</option>
+            </select>
+            <button class="btn btn-sm btn-outline" onclick="sendFeedback('${data.trace_id}', -1, document.getElementById('tag_${data.trace_id}').value, '${fbId}')">👎 标记 Badcase 回流</button>
+          </div>
+
+          <details open>
+            <summary>本轮召回原始评论证据（共 ${chunks.length} 条）</summary>
+            ${chunksHtml}
+          </details>
+          ${specsHtml}
+        </div>
+      `;
+    }
+
+    async function sendFeedback(traceId, score, tag, containerId) {
+      const box = document.getElementById(containerId);
+      try {
+        const res = await fetch("/api/v1/feedback", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ trace_id: traceId, user_feedback: score, badcase_tag: tag })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.detail || "提交失败");
+        box.innerHTML = `<span style="color:#047857;font-weight:600;">✅ 反馈已回流至 PostgreSQL 与 Langfuse（Trace: ${escapeHtml(traceId)}，标签: ${escapeHtml(tag || "满意")}）</span>`;
+      } catch (e) {
+        alert("反馈提交失败：" + e.message);
+      }
+    }
+
+    async function handleAsk() {
+      const skuId = document.getElementById("skuSelect").value;
+      const question = document.getElementById("questionInput").value.trim();
+      const mode = document.querySelector('input[name="runMode"]:checked').value;
+      const useCache = document.getElementById("useCacheCheckbox").checked;
+      const btn = document.getElementById("askBtn");
+      const area = document.getElementById("resultArea");
+
+      if (question.length < 2) {
+        alert("请输入至少 2 个字的咨询问题。");
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = "正在检索与生成中...";
+      area.innerHTML = `<div class="card empty-state"><h3>正在执行检索与推理，请稍候...</h3><p>正在调用向量检索、BM25 重排与大模型生成。</p></div>`;
+
+      try {
+        if (mode === "compare") {
+          const [v1, v2] = await Promise.all([
+            callQA(skuId, question, "v1_vector", false),
+            callQA(skuId, question, "v2_agentic_hybrid", useCache)
+          ]);
+          area.innerHTML = `<div class="results-grid dual">${renderResultCard(v1, skuId)}${renderResultCard(v2, skuId)}</div>`;
+        } else {
+          const res = await callQA(skuId, question, mode, useCache);
+          area.innerHTML = `<div class="results-grid">${renderResultCard(res, skuId)}</div>`;
+        }
+      } catch (e) {
+        area.innerHTML = `<div class="error-banner"><strong>请求失败：</strong>${escapeHtml(e.message)}</div>`;
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "发起智能问答";
+      }
+    }
+
+    loadHealth();
+    loadProducts();
+  </script>
+</body>
+</html>

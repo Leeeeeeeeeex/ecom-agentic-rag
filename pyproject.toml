@@ -1,0 +1,46 @@
+[project]
+name = "ecom-agentic-rag"
+version = "0.1.0"
+description = "跨境电商生产级 Agentic RAG 商品与评论知识问答平台（混合检索 + 证据门控 + RAGAS 评测 + Langfuse 可观测）"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.32.0",
+    "pydantic>=2.9.0",
+    "pydantic-settings>=2.6.0",
+    "psycopg[binary]>=3.2.0",
+    "pgvector>=0.3.6",
+    "redis>=5.2.0",
+    "openai>=1.55.0",
+    "langgraph>=0.2.50",
+    "langchain-core>=0.3.20",
+    "langchain-openai>=0.2.10",
+    "langfuse>=2.55.0",
+    "rank-bm25>=0.2.2",
+    "jieba>=0.42.1",
+    "httpx>=0.27.2",
+    "numpy>=1.26.4",
+]
+
+[project.optional-dependencies]
+eval = [
+    "ragas>=0.2.6",
+    "datasets>=3.1.0",
+]
+dev = [
+    "pytest>=8.3.0",
+    "pytest-asyncio>=0.24.0",
+    "ruff>=0.7.0",
+]
+
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"

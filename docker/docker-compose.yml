@@ -1,0 +1,83 @@
+# ==============================================================================
+# 跨境电商 Agentic RAG 基础设施编排（部署在你的 Linux 虚拟机上）
+# 使用方式：
+#   1) 仅启动核心依赖（推荐 2-4GB 内存虚拟机）：
+#      docker compose up -d
+#   2) 连同本地 Langfuse 可观测平台一起启动（建议虚拟机内存 >= 4GB）：
+#      docker compose --profile observability up -d
+# ==============================================================================
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: ecom-rag-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: rag_user
+      POSTGRES_PASSWORD: rag_password_change_me
+      POSTGRES_DB: ecom_rag
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rag_user -d ecom_rag"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: ecom-rag-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # 可选：自托管 Langfuse v2（轻量，直接复用上面的 PostgreSQL 单独建库或独立库）
+  langfuse-db:
+    image: postgres:16-alpine
+    container_name: ecom-rag-langfuse-db
+    profiles: ["observability"]
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: langfuse
+      POSTGRES_PASSWORD: langfuse_password_change_me
+      POSTGRES_DB: langfuse
+    volumes:
+      - langfuse_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U langfuse -d langfuse"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  langfuse:
+    image: langfuse/langfuse:2
+    container_name: ecom-rag-langfuse
+    profiles: ["observability"]
+    restart: unless-stopped
+    depends_on:
+      langfuse-db:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgresql://langfuse:langfuse_password_change_me@langfuse-db:5432/langfuse
+      NEXTAUTH_SECRET: change_this_random_secret_32chars_min
+      SALT: change_this_salt_32chars_min
+      NEXTAUTH_URL: http://localhost:3000
+      TELEMETRY_ENABLED: "false"
+
+volumes:
+  pgdata:
+  redisdata:
+  langfuse_pgdata:
